@@ -1,0 +1,4 @@
+app_location: .
+api_location: ""
+output_location: .
+node_version: "18.20.4"

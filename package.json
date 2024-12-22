@@ -1,0 +1,13 @@
+{
+  "name": "spellista",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "start": "serve .",
+    "build": "echo 'No build step needed' && exit 0"    
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
