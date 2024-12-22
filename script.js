@@ -7,6 +7,7 @@ const intervals = [
     { videoId: 'G4eUuORg1FQ', start: 2140, end: 2507 }
 ];
 let currentIndex = 0;
+let isTransitioning = false; // Flagga för att hantera dubbla anrop
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
@@ -24,16 +25,34 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-        playNext();
+    if (event.data === YT.PlayerState.ENDED && !isTransitioning) {
+        const currentTime = Math.floor(player.getCurrentTime());
+        const expectedEndTime = intervals[currentIndex].end;
+
+        // Säkerställ att videon är vid slutpunkten
+        if (currentTime >= expectedEndTime - 1) { 
+            isTransitioning = true;
+            console.log(`Nuvarande index: ${currentIndex}`);
+            playNext();
+        }
     }
 }
 
 function playNext() {
-    currentIndex = (currentIndex + 1) % intervals.length;
-    player.loadVideoById({
-        videoId: intervals[currentIndex].videoId,
-        startSeconds: intervals[currentIndex].start,
-        endSeconds: intervals[currentIndex].end
-    });
+    currentIndex++;
+    if (currentIndex < intervals.length) {
+        player.loadVideoById({
+            videoId: intervals[currentIndex].videoId,
+            startSeconds: intervals[currentIndex].start,
+            endSeconds: intervals[currentIndex].end
+        });
+    } else {
+        console.log('Alla intervall har spelats upp.');
+        player.stopVideo();
+    }
+
+    // Återställ flaggan efter en liten fördröjning
+    setTimeout(() => {
+        isTransitioning = false;
+    }, 500);
 }
